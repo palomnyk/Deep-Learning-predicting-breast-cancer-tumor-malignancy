@@ -6,6 +6,21 @@ from sklearn.preprocessing import MinMaxScaler
 from sklearn import metrics
 from sklearn.metrics import confusion_matrix
 import itertools
+import os
+from sklearn.model_selection import LeaveOneOut
+
+# Data input and leave-1-out cross validation
+
+# Change directory to where "wdbc.data" is located
+os.chdir('/Users/brando/Documents/School/GitWork/Deep-Learning-predicting-breast-cancer-tumor-malignancy/')
+dataf = pd.read_csv("wdbc.data",header=None)
+data = np.array(dataf) # Create np array
+
+
+
+cost_list = []
+delta_j_list = []
+prediction_list = []
 
 np.set_printoptions(threshold=np.inf)
 
@@ -149,7 +164,66 @@ class dlnet:
 
         return
 
-df = pd.read_csv('/Users/brando/Documents/School/GitWork/Deep-Learning-predicting-breast-cancer-tumor-malignancy/wisconsin-cancer-dataset.csv',header=None)
+
+# parses through all 569 rows and selects one row for testing, other 568 for testing
+# call neural network functions in this for loop
+# save outputs you want into lists for plotting etc.
+
+import numpy as np
+import pandas as pd
+
+import os
+from sklearn.model_selection import LeaveOneOut
+
+# Data input and leave-1-out cross validation
+
+# Change directory to where "wdbc.data" is located
+dataf = pd.read_csv("wdbc.data",header=None)
+
+data = np.array(dataf) # Create np array
+
+data = data[:,:12] # Remove columns 12-31, unneeded
+data_target = data[:,1] # Remove "id" column
+
+# Convert diagnosis to 0 for 'B' and 1 for 'M'
+bool_target = data_target[:,]=='M'
+y = bool_target.astype(int)
+X = data[:,2:]
+
+l1o = LeaveOneOut() #sklearn's leave-one-out
+l1o.get_n_splits(X)
+
+cost_list = []
+delta_j_list = []
+prediction_list = []
+
+# parses through all 569 rows and selects one row for testing, other 568 for testing
+# call neural network functions in this for loop
+# save outputs you want into lists for plotting etc.
+
+for train_index, test_index in l1o.split(X):
+#   print("TRAIN:", train_index, "TEST:", test_index)
+   X_train, X_test = X[train_index], X[test_index]
+   y_train, y_test = y[train_index], y[test_index]
+   print(X_train, X_train.shape, y_train, y_train.shape)
+   nn = dlnet(X_train, y_train)
+   nn.lr=0.07
+   nn.dims = [X_train.shape[1], X_train.shape[0], 1]
+   nn.gd(X_train, Y_train, iter = 67000)
+
+   pred_train = nn.pred(X_train, y_train)
+   pred_test = nn.pred(X_test, y_test)
+
+   nn.threshold=0.5
+
+   nn.X,nn.Y= X_train, Y_train
+   target=np.around(np.squeeze(Y_train), decimals=0).astype(np.int)
+   predicted=np.around(np.squeeze(nn.pred(X_train,Y_train)), decimals=0).astype(np.int)
+   plotCf(target,predicted,'Cf Training Set')
+#   print(X_train)
+
+
+
 df = df[~df[6].isin(['?'])]
 df = df.astype(float)
 df.iloc[:,10].replace(2, 0,inplace=True)
@@ -164,7 +238,6 @@ scaled_df = pd.DataFrame(scaled_df, columns=names)
 
 x=scaled_df.iloc[0:500,1:10].values.transpose()
 y=df.iloc[0:500,10:].values.transpose()
-
 xval=scaled_df.iloc[501:683,1:10].values.transpose()
 yval=df.iloc[501:683,10:].values.transpose()
 
