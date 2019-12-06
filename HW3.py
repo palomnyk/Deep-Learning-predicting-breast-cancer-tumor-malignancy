@@ -177,14 +177,14 @@ class dlnet:#neural net
             self.backward()
 
             if i % 500 == 0:
-                print("Cost after iteration %i: %f" % (i, loss))
+                #print("Cost after iteration %i: %f" % (i, loss))
                 self.loss.append(loss)
 
         plt.plot(np.squeeze(self.loss))
         plt.ylabel('Loss')
         plt.xlabel('Iter')
         plt.title("Lr =" + str(self.lr))
-        plt.show()
+        #plt.show()
 
         return
 
@@ -209,58 +209,62 @@ xval=scaled_df.iloc[501:,2:13].values.transpose()
 yval=df.iloc[501:,1].values.transpose()
 yval = np.array([yval])
 
-print(f"df.shape: {df.shape}, x.shape: {x.shape}, y.shape: {y.shape}, xval.shape: {xval.shape}, yval.shape: {yval.shape}")
+y_actual = []
+predictions = []
+for i in range(scaled_df.shape[0]):
+    x_train = np.delete(x, i, axis=1)
+    y_train = np.delete(y, i, axis=1)
 
-nn = dlnet(x,y)
-nn.lr=0.01
-nn.dims = [10, 15, 15, 1]
-
-nn.gd(x, y, iter = 40000)
-
-
-
-
-
-pred_train = nn.pred(x, y)
-pred_test = nn.pred(xval, yval)
-
-nn.threshold=0.5
-
-nn.X,nn.Y=x, y
-target=np.around(np.squeeze(y), decimals=0).astype(np.int)
-predicted=np.around(np.squeeze(nn.pred(x,y)), decimals=0).astype(np.int)
-plotCf(target,predicted,'Cf Training Set')
-
-nn.X,nn.Y=xval, yval
-target=np.around(np.squeeze(yval), decimals=0).astype(np.int)
-predicted=np.around(np.squeeze(nn.pred(xval,yval)), decimals=0).astype(np.int)
-plotCf(target,predicted,'Cf Validation Set')
-
-nn.threshold=0.7
-
-nn.X,nn.Y=x, y
-target=np.around(np.squeeze(y), decimals=0).astype(np.int)
-predicted=np.around(np.squeeze(nn.pred(x,y)), decimals=0).astype(np.int)
-plotCf(target,predicted,'Cf Training Set')
-
-nn.X,nn.Y=xval, yval
-target=np.around(np.squeeze(yval), decimals=0).astype(np.int)
-predicted=np.around(np.squeeze(nn.pred(xval,yval)), decimals=0).astype(np.int)
-plotCf(target,predicted,'Cf Validation Set')
-
-nn.threshold=0.9
-
-nn.X,nn.Y=x, y
-target=np.around(np.squeeze(y), decimals=0).astype(np.int)
-predicted=np.around(np.squeeze(nn.pred(x,y)), decimals=0).astype(np.int)
-plotCf(target,predicted,'Cf Training Set')
-
-nn.X,nn.Y=xval, yval
-target=np.around(np.squeeze(yval), decimals=0).astype(np.int)
-predicted=np.around(np.squeeze(nn.pred(xval,yval)), decimals=0).astype(np.int)
-plotCf(target,predicted,'Cf Validation Set')
-
-nn.X,nn.Y=xval, yval
-yvalh, loss = nn.forward()
-print("\ny",np.around(yval[:,0:50,], decimals=0).astype(np.int))
-print("\nyh",np.around(yvalh[:,0:50,], decimals=0).astype(np.int),"\n")
+    nn = dlnet(x_train, y_train)
+    nn.lr = 0.01
+    nn.dims = [10, 15, 15, 1]
+    nn.gd(x_train, y_train, iter=15000)
+    x_test = np.array([np.array(x[:, i])]).transpose()
+    y_test = np.array([np.array(y[:, i])]).transpose()
+    #    pred_train = nn.pred(x_train, y_train)
+    pred_test = nn.pred(x_test, y_test)
+    print("Iteration number: ", i)
+    predictions.append(pred_test[0][0])
+    y_actual.append(y_test[0][0])
+    print("predictions: ", predictions)
+    print("y actual: ", y_actual)
+    print('\n')
+#
+# nn.X,nn.Y=x, y
+# target=np.around(np.squeeze(y), decimals=0).astype(np.int)
+# predicted=np.around(np.squeeze(nn.pred(x,y)), decimals=0).astype(np.int)
+# plotCf(target,predicted,'Cf Training Set')
+#
+# nn.X,nn.Y=xval, yval
+# target=np.around(np.squeeze(yval), decimals=0).astype(np.int)
+# predicted=np.around(np.squeeze(nn.pred(xval,yval)), decimals=0).astype(np.int)
+# plotCf(target,predicted,'Cf Validation Set')
+#
+# nn.threshold=0.7
+#
+# nn.X,nn.Y=x, y
+# target=np.around(np.squeeze(y), decimals=0).astype(np.int)
+# predicted=np.around(np.squeeze(nn.pred(x,y)), decimals=0).astype(np.int)
+# plotCf(target,predicted,'Cf Training Set')
+#
+# nn.X,nn.Y=xval, yval
+# target=np.around(np.squeeze(yval), decimals=0).astype(np.int)
+# predicted=np.around(np.squeeze(nn.pred(xval,yval)), decimals=0).astype(np.int)
+# plotCf(target,predicted,'Cf Validation Set')
+#
+# nn.threshold=0.9
+#
+# nn.X,nn.Y=x, y
+# target=np.around(np.squeeze(y), decimals=0).astype(np.int)
+# predicted=np.around(np.squeeze(nn.pred(x,y)), decimals=0).astype(np.int)
+# plotCf(target,predicted,'Cf Training Set')
+#
+# nn.X,nn.Y=xval, yval
+# target=np.around(np.squeeze(yval), decimals=0).astype(np.int)
+# predicted=np.around(np.squeeze(nn.pred(xval,yval)), decimals=0).astype(np.int)
+# plotCf(target,predicted,'Cf Validation Set')
+#
+# nn.X,nn.Y=xval, yval
+# yvalh, loss = nn.forward()
+# print("\ny",np.around(yval[:,0:50,], decimals=0).astype(np.int))
+# print("\nyh",np.around(yvalh[:,0:50,], decimals=0).astype(np.int),"\n")

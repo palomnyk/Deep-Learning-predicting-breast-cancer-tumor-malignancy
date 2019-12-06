@@ -221,3 +221,24 @@ nn.X,nn.Y=xval, yval
 target=np.around(np.squeeze(yval), decimals=0).astype(np.int)
 predicted=np.around(np.squeeze(nn.pred(xval,yval)), decimals=0).astype(np.int)
 plotCf(target,predicted,'Cf Validation Set')
+
+
+loo.get_n_splits(x)
+
+preds = []#
+
+for train_index, test_index in loo.split(x):
+    nn = dlnet(x,y)
+    nn.lr = 0.01
+    nn.dims = [10, 15, 15, 1]
+    #print(train_index, test_index)
+    x_train, x_test = x[train_index], x[test_index]
+    y_train, y_test = y[train_index], y[test_index]
+    #print(x_train)
+    x_train = x_train.transpose()
+    y_train = np.array([y_train.transpose()])
+    x_test = x_test.transpose()
+    y_test = np.array([y_test.transpose()])
+    print(f" x_train.shape: {x_train.shape}, y_train.shape: {y_train.shape}, x_test.shape: {x_test.shape}, y_test.shape: {y_test.shape}")
+
+    nn.gd(x_train, y_train, iter=40000)
