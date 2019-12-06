@@ -233,7 +233,7 @@ for i in range(scaled_df.shape[0]):
     y_actual.append(y_test[0][0])
     print("predictions: ", predictions[i])
     print("y actual: ", y_actual[i])
-    print("Model Accuracy: " + str(validation/(i+1.0)))
+    print("Model Accuracy: %" + str(3(validation/(i+1.0)) * 100))
     print('\n')
 
 #
