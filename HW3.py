@@ -188,52 +188,68 @@ class dlnet:#neural net
 
         return
 
+# Read in the wdbc file
 df = pd.read_csv('wdbc.data',header=None)
+# Reclassify Benign as 0 an Malignant as 1 in the data file
 df.iloc[:,1].replace('B', 0,inplace=True)
 df.iloc[:,1].replace('M', 1,inplace=True)
+# Verify that all entries can be converted to float
 df = df.astype(float)
 
-df.head(3)
+# Create and store data into a new data frame to scale the enteries
 scaled_df=df
 names = df.columns[1:13]
 scaler = MinMaxScaler()
+# Record all rows and columns 2-12 since they are the variables of interest and scale them
 scaled_df = scaler.fit_transform(df.iloc[:,1:13])
-#print(scaled_df)
 scaled_df = pd.DataFrame(scaled_df, columns=names)
 
-x=scaled_df.iloc[0:500,2:13].values.transpose()
-y=df.iloc[0:500,1].values.transpose()
+# Assign all columns except 2 as the independant variables to a panda frame
+x=scaled_df.iloc[:,2:13].values.transpose()
+# Assign column 2 as the dependent variable to a panda frame
+y=df.iloc[:,1].values.transpose()
+# Reformat y so that it will not cause an error when run through the ANN
 y = np.array([y])
 
-xval=scaled_df.iloc[501:,2:13].values.transpose()
-yval=df.iloc[501:,1].values.transpose()
-yval = np.array([yval])
 
+# Empty lists to store predicted vs actual through iterations
 y_actual = []
 predictions = []
-validation = 0.0
+accuracy = 0.0
+# Iterate through the amount of rows from input data
 for i in range(scaled_df.shape[0]):
+    # Remove a row based on the index of the loop
     x_train = np.delete(x, i, axis=1)
     y_train = np.delete(y, i, axis=1)
 
+    # Call the ANN class using the training set with hard coded l.r and dims
     nn = dlnet(x_train, y_train)
     nn.lr = 0.01
     nn.dims = [10, 15, 15, 1]
-    nn.gd(x_train, y_train, iter=50000)
+    nn.gd(x_train, y_train, iter=10000)
+
+    # With the row that was removed for the training data test the trained model
     x_test = np.array([np.array(x[:, i])]).transpose()
     y_test = np.array([np.array(y[:, i])]).transpose()
-    #    pred_train = nn.pred(x_train, y_train)
+
+    # Call the pred function from the ANN class and validate that the model is succesfully classifying
     pred_test = nn.pred(x_test, y_test)
-    print("Iteration number: ", i+1)
+
+    # If the predicted classification is the same as the actual add to a counter
     if pred_test[0][0] == y_test[0][0]:
         validation = validation + 1.0
     else:
         print('Incorrect Prediction')
+
+    # Append both actual and predicted to seperate ordered lists
     predictions.append(pred_test[0][0])
     y_actual.append(y_test[0][0])
+
+    # Print statements to verify model validity
+    print("Iteration number: ", i+1)
     print("predictions: ", predictions[i])
     print("y actual: ", y_actual[i])
-    print("Model Accuracy: %" + str(3(validation/(i+1.0)) * 100))
+    print("Model Accuracy: %" + str((accuracy/(i+1.0)) * 100))
     print('\n')
 
 #
