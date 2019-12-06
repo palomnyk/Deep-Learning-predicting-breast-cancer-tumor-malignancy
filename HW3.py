@@ -260,6 +260,8 @@ for i in range(scaled_df.shape[0]):
 # Plot the accuracy of the ANN predicted classification vs the number of iterations
 plt.plot(accuracyList)
 plt.xlabel('Iter')
+plt.xlim(1,i+1)
+plt.xticks(range(1,i+1), range(1,i+1))
 plt.ylabel('% Correct')
 plt.ylim(0,100)
 plt.title("% Correct vs Iteration" )
