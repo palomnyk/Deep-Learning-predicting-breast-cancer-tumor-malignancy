@@ -180,10 +180,10 @@ class dlnet:#neural net
                 #print("Cost after iteration %i: %f" % (i, loss))
                 self.loss.append(loss)
 
-        plt.plot(np.squeeze(self.loss))
-        plt.ylabel('Loss')
-        plt.xlabel('Iter')
-        plt.title("Lr =" + str(self.lr))
+        #plt.plot(np.squeeze(self.loss))
+        #plt.ylabel('Loss')
+        #plt.xlabel('Iter')
+        #plt.title("Lr =" + str(self.lr))
         #plt.show()
 
         return
@@ -215,6 +215,7 @@ y = np.array([y])
 # Empty lists to store predicted vs actual through iterations
 y_actual = []
 predictions = []
+accuracyList = []
 accuracy = 0.0
 # Iterate through the amount of rows from input data
 for i in range(scaled_df.shape[0]):
@@ -235,9 +236,9 @@ for i in range(scaled_df.shape[0]):
     # Call the pred function from the ANN class and validate that the model is succesfully classifying
     pred_test = nn.pred(x_test, y_test)
 
-    # If the predicted classification is the same as the actual add to a counter
+    # If the predicted classification is the same add 1 to the accuracy counter
     if pred_test[0][0] == y_test[0][0]:
-        validation = validation + 1.0
+        accuracy = accuracy + 1.0
     else:
         print('Incorrect Prediction')
 
@@ -245,12 +246,23 @@ for i in range(scaled_df.shape[0]):
     predictions.append(pred_test[0][0])
     y_actual.append(y_test[0][0])
 
+    # Calculate the accuracy of the model so far
+    validate = (accuracy / (i + 1.0)) * 100
+    accuracyList.append(validate)
+
     # Print statements to verify model validity
     print("Iteration number: ", i+1)
     print("predictions: ", predictions[i])
     print("y actual: ", y_actual[i])
-    print("Model Accuracy: %" + str((accuracy/(i+1.0)) * 100))
+    print("Model Accuracy: %" + str(validate))
     print('\n')
+
+# Plot the accuracy of the ANN predicted classification vs the number of iterations
+plt.plot(accuracyList)
+plt.ylabel('% Correct')
+plt.xlabel('Iter')
+plt.title("% Correct vs Iteration" )
+plt.show()
 
 #
 # nn.X,nn.Y=x, y
