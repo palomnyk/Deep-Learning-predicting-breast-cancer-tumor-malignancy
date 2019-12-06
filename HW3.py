@@ -227,7 +227,7 @@ for i in range(scaled_df.shape[0]):
     nn = dlnet(x_train, y_train)
     nn.lr = 0.01
     nn.dims = [10, 15, 15, 1]
-    nn.gd(x_train, y_train, iter=10000)
+    nn.gd(x_train, y_train, iter=1000)
 
     # With the row that was removed for the training data test the trained model
     x_test = np.array([np.array(x[:, i])]).transpose()
@@ -259,8 +259,9 @@ for i in range(scaled_df.shape[0]):
 
 # Plot the accuracy of the ANN predicted classification vs the number of iterations
 plt.plot(accuracyList)
-plt.ylabel('% Correct')
 plt.xlabel('Iter')
+plt.ylabel('% Correct')
+plt.ylim(0,100)
 plt.title("% Correct vs Iteration" )
 plt.show()
 
