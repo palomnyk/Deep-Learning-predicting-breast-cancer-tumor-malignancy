@@ -211,6 +211,7 @@ yval = np.array([yval])
 
 y_actual = []
 predictions = []
+validation = 0.0
 for i in range(scaled_df.shape[0]):
     x_train = np.delete(x, i, axis=1)
     y_train = np.delete(y, i, axis=1)
@@ -218,17 +219,23 @@ for i in range(scaled_df.shape[0]):
     nn = dlnet(x_train, y_train)
     nn.lr = 0.01
     nn.dims = [10, 15, 15, 1]
-    nn.gd(x_train, y_train, iter=15000)
+    nn.gd(x_train, y_train, iter=50000)
     x_test = np.array([np.array(x[:, i])]).transpose()
     y_test = np.array([np.array(y[:, i])]).transpose()
     #    pred_train = nn.pred(x_train, y_train)
     pred_test = nn.pred(x_test, y_test)
-    print("Iteration number: ", i)
+    print("Iteration number: ", i+1)
+    if pred_test[0][0] == y_test[0][0]:
+        validation = validation + 1.0
+    else:
+        print('Incorrect Prediction')
     predictions.append(pred_test[0][0])
     y_actual.append(y_test[0][0])
-    print("predictions: ", predictions)
-    print("y actual: ", y_actual)
+    print("predictions: ", predictions[i])
+    print("y actual: ", y_actual[i])
+    print("Model Accuracy: " + str(validation/(i+1.0)))
     print('\n')
+
 #
 # nn.X,nn.Y=x, y
 # target=np.around(np.squeeze(y), decimals=0).astype(np.int)
