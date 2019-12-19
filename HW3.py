@@ -22,16 +22,8 @@ from sklearn.model_selection import LeaveOneOut
 
 # Data input and leave-1-out cross validation
 
-# Change directory to where "wdbc.data" is located
-os.chdir('/Users/brando/Documents/School/GitWork/Deep-Learning-predicting-breast-cancer-tumor-malignancy/')
 dataf = pd.read_csv("wdbc.data",header=None)
 data = np.array(dataf) # Create np array
-
-
-
-cost_list = []
-delta_j_list = []
-prediction_list = []
 
 np.set_printoptions(threshold=np.inf)
 
@@ -251,11 +243,14 @@ for i in range(scaled_df.shape[0]):
     accuracyList.append(validate)
 
     # Print statements to verify model validity
-    print("Iteration number: ", i+1)
-    print("predictions: ", predictions[i])
-    print("y actual: ", y_actual[i])
-    print("Model Accuracy: %" + str(validate))
-    print('\n')
+#    print("Iteration number: ", i+1)
+#    print("predictions: ", predictions[i])
+#    print("y actual: ", y_actual[i])
+#    print("Model Accuracy: %" + str(validate))
+#    print('\n')
+
+print(accuracyList)
+print(f"mean accuracy: {sum(accuracyList)/len(accuracyList)}")
 
 # Plot the accuracy of the ANN predicted classification vs the number of iterations
 plt.plot(accuracyList)
